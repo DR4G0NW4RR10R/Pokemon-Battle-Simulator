@@ -976,6 +976,7 @@ def mainMenu():
         mainMenu()
     elif choice == 2:
         makeNewPokemon()
+        mainMenu()
     elif choice == 3:
         if PlayerPoke1 == None or RivalPoke1 == None:
             print("You haven't loaded a save file!")
