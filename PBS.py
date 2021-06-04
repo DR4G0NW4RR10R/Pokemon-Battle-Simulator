@@ -976,6 +976,7 @@ def mainMenu():
         mainMenu()
     elif choice == 2:
         makeNewPokemon()
+        wait(2000)
         mainMenu()
     elif choice == 3:
         if PlayerPoke1 == None or RivalPoke1 == None:
