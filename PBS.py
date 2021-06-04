@@ -2,12 +2,15 @@ import random
 import time
 import math
 from datetime import datetime
+import csv
+from shutil import copyfile
+import sys
 
 
 log_output = open("log.txt", "a")
-pokemon_stats_sheet = open("pokemon_stats.csv", "r")
-leveling_rates_sheet = open("leveling_rates.csv", "r")
-moves_sheet = open("Pokemon Moves.csv", "r")
+pokemon_stats_sheet = open("Pokemon_Info/pokemon_stats.csv", "r")
+leveling_rates_sheet = open("Pokemon_Info/leveling_rates.csv", "r")
+moves_sheet = open("Pokemon_Info/Pokemon Moves.csv", "r")
 
 move_used = None
 dmg_dealt = None
@@ -15,6 +18,8 @@ PlayerPoke1 = None
 RivalPoke1 = None
 rival_move_used = None
 choice = None
+playername = None
+rivalname = None
 
 
 def wait(ms):
@@ -184,16 +189,17 @@ def askForLimitedNumber(phrase, mn, mx):
     x = None
     try:
         x = (int(input(phrase)))
+        if x < mn or x > mx:
+            print("Please enter a number between {} and {}.".format(mn, mx))
+            print("")
+            return(askForLimitedNumber(phrase, mn, mx))
+        else:
+            return(x)
     except:
         print("Something went wrong. Please try again.")
         print("")
         return(askForLimitedNumber(phrase, mn, mx))
-    
-    if x < mn or x > mx:
-        print("Please enter a number between {} and {}.".format(mn, mx))
-        print("")
-        return(askForLimitedNumber(phrase, mn, mx))
-    return(x)
+   
 
         
 
@@ -477,23 +483,25 @@ class Pokemon:
         
         
 otherlist = []
-        
-        
-#=====================================================================================================================
-
-log("\n\n\n\nProgram initiated ==========================================================================")
 
 
-try:
-    savefile = open("save.csv", "r")
+
+def getInfoFromSave():
+    global otherlist
+    global playername
+    global rivalname
+    global PlayerPoke1
+    global RivalPoke1
+    save_file = open("Saves/save.txt", "r")
     savedata = []
     
-    for line in savefile.readlines():
+    for line in save_file.readlines():
         otherlist.append(line.replace('\n', ''))
     for i in otherlist:
         savedata.append(i.split(','))
+    save_file.close()
             
-    print("save file detected")
+    print("\nLoading save....\n")
     playername = savedata[0][0]
     print("Player name: {}".format(playername))
     rivalname = savedata[1][0]
@@ -545,11 +553,16 @@ try:
     RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
         
     print("{}'s Pokemon: {} the level {} {}.".format(rivalname, RivalPoke1.name, RivalPoke1.level, RivalPoke1.pokemon))
+    print("\nSave loaded!\n")
+    log("\n\nSave file loaded. {} vs rival {}.".format(PlayerPoke1.name, RivalPoke1.name))
     input("Type anything to continue ")
-        
-        
-except FileNotFoundError:
 
+def makeNewPokemon():
+    global otherlist
+    global playername
+    global rivalname
+    global PlayerPoke1
+    global RivalPoke1
     print("Hello there, Trainer!")
     wait(1000)
     print("Welcome to the Pokemon Battle Simulator!")
@@ -671,7 +684,7 @@ except FileNotFoundError:
         PlayerPoke1.moves.append(None)
     print("{}'s moveset: {}, {}, {}, and {}.\n".format(PlayerPoke1.name, PlayerPoke1.moves[0], PlayerPoke1.moves[1], PlayerPoke1.moves[2], PlayerPoke1.moves[3]))
 
-
+    PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
     print("All done setting up your Pokemon!")
     wait(1000)
     print("\n\n")
@@ -777,161 +790,445 @@ except FileNotFoundError:
     print("{}'s moveset: {}, {}, {}, and {}.\n".format(RivalPoke1.name, RivalPoke1.moves[0], RivalPoke1.moves[1], RivalPoke1.moves[2], RivalPoke1.moves[3]))
 
 
-
+    RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
     print("All done setting up your rival's Pokemon!\n\n\n")
     wait(1000)
 
-    print("Generating battle, please enjoy this cookie while you wait.....")
-    wait(500)
-    print("               ___________________________________             ")
-    wait(500)
-    print("              /      o           O      o         \            ")
-    wait(500)
-    print("              |   o     O     0        o          |            ")
-    wait(500)
-    print("              |       O    o       0      o       |            ")
-    wait(500)
-    print("              |    O      o           0           |            ")
-    wait(500)
-    print("              |   o     O     0        o          |            ")
-    wait(500)
-    print("              |       O    o       0      o       |            ")
-    wait(500)
-    print("              |    O      o           0           |            ")
-    wait(500)
-    print("              |   o     O     0        o          |            ")
-    wait(500)
-    print("              |       O    o       0      o       |            ")
-    wait(500)
-    print("              |    O      o           0           |            ")
-    wait(500)
-    print("              |    O      o           0           |            ")
-    wait(500)
-    print("              |   o     O     0        o          |            ")
-    wait(500)
-    print("              |       O    o       0      o       |            ")
-    wait(500)
-    print("              |    O      o           0           |            ")
-    wait(500)
-    print("              \___________________________________/            ")
-    print("\nJust kidding, everything was already set up, just wanted to make you wait :P")
-    wait(5000)
-    print("\n\n")
-
-print("\n\n\nRival {} sent out {}.\n".format(rivalname, RivalPoke1.name))
-wait(2000)
-print("<{}> Go! {}!".format(playername, PlayerPoke1.name))
-wait(2000)
+def battle():
+    global PlayerPoke1
+    global RivalPoke1
+    global move_used
+    global dmg_dealt
+    global choice
+    global playername
+    global rivalname
+    global rival_move_used
+    print("Starting battle....")
+    wait(2000)
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    print('''
+  ___          _     _     _            ___   _                  _     _ 
+ | _ )  __ _  | |_  | |_  | |  ___     / __| | |_   __ _   _ _  | |_  | |
+ | _ \ / _` | |  _| |  _| | | / -_)    \__ \ |  _| / _` | | '_| |  _| |_|
+ |___/ \__,_|  \__|  \__| |_| \___|    |___/  \__| \__,_| |_|    \__| (_)
+                                                                         ''')
+    wait(2000)
+    print("\n\n\nRival {} sent out {}.\n".format(rivalname, RivalPoke1.name))
+    wait(2000)
+    print("<{}> Go! {}!".format(playername, PlayerPoke1.name))
+    wait(2000)
 
 
-while True:
-    print("\n\n\n\n\n\n\n")
-    print("===================================================")
-    print("HP [{}]                {}".format(getHealthBars(PlayerPoke1, RivalPoke1)[1], RivalPoke1.name))
-    print("\n\n\n")
-    print("HP [{}] {}/{}        {}".format(getHealthBars(PlayerPoke1, RivalPoke1)[0],addZeroes(PlayerPoke1.hp, 3), addZeroes(PlayerPoke1.Max_HP, 3), PlayerPoke1.name))
-    print("===================================================")
+    while True:
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        print("===================================================")
+        print("HP [{}]                {}".format(getHealthBars(PlayerPoke1, RivalPoke1)[1], RivalPoke1.name))
+        print("\n\n\n")
+        print("HP [{}] {}/{}        {}".format(getHealthBars(PlayerPoke1, RivalPoke1)[0],addZeroes(PlayerPoke1.hp, 3), addZeroes(PlayerPoke1.Max_HP, 3), PlayerPoke1.name))
+        print("===================================================")
 
-    
-    print("Select a move to use:")
-    print("1. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[0], 20), PlayerPoke1.PP[0]))
-    print("2. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[1], 20), PlayerPoke1.PP[1]))
-    print("3. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[2], 20), PlayerPoke1.PP[2]))
-    print("4. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[3], 20), PlayerPoke1.PP[3]))
-    choice = askForLimitedNumber("Pick a number: ", 1, 4)
-    if PlayerPoke1.moves[choice - 1] == "None":
-        while True:
-            print("\nThat's not a move, silly!")
-            wait(1000)
-            choice = askForLimitedNumber("Pick a number: ", 1, 4)
-            if not(PlayerPoke1.moves[choice - 1] == "None"):
-                break
-    if int(PlayerPoke1.PP[choice - 1]) == 0:
-        while True:
-            print("\n{} has no PP left for that move.".format(PlayerPoke1.name))
-            wait(1000)
-            choice = askForLimitedNumber("Pick a number: ", 1, 4)
-            if not(int(PlayerPoke1.PP[choice - 1]) == 0):
-                break
-    move_used = PlayerPoke1.moves[choice - 1]
-    
-    
-    #This section determines the move used by the rival Pokemon. It currently only takes into account the amount of damage that would be dealt by each move, and makes a weighted random selection, with each move having a weight of its damage plus its PP, times the move's accuracy. This system needs to be improved upon in the future.
-    rival_usable_moves = []
-    try:
-        score1 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[0]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[0] * int(RivalPoke1.GetMove(move_used)[6])
-    except:
-        score1 = RivalPoke1.PP[0]
-    try:
-        score2 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[1]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[1] * int(RivalPoke1.GetMove(move_used)[6])
-    except:
-        score2 = RivalPoke1.PP[1]
-    try:
-        score3 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[2]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[2] * int(RivalPoke1.GetMove(move_used)[6])
-    except:
-        score3 = RivalPoke1.PP[2]
-    try:
-        score4 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[3]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[3] * int(RivalPoke1.GetMove(move_used)[6])
-    except:
-        score4 = RivalPoke1.PP[3]
-    
-    
-    
-    for i in range(score1):
-        rival_usable_moves.append(RivalPoke1.moves[0])
-    for i in range(score2):
-        rival_usable_moves.append(RivalPoke1.moves[1])
-    for i in range(score3):
-        rival_usable_moves.append(RivalPoke1.moves[2])
-    for i in range(score4):
-        rival_usable_moves.append(RivalPoke1.moves[3])
+
+        print("Select a move to use:")
+        print("1. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[0], 20), PlayerPoke1.PP[0]))
+        print("2. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[1], 20), PlayerPoke1.PP[1]))
+        print("3. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[2], 20), PlayerPoke1.PP[2]))
+        print("4. {}PP: {}".format(addWhitespace(PlayerPoke1.moves[3], 20), PlayerPoke1.PP[3]))
+        choice = askForLimitedNumber("Pick a number: ", 1, 4)
+        if PlayerPoke1.moves[choice - 1] == "None":
+            while True:
+                print("\nThat's not a move, silly!")
+                wait(1000)
+                choice = askForLimitedNumber("Pick a number: ", 1, 4)
+                if not(PlayerPoke1.moves[choice - 1] == "None"):
+                    break
+        if int(PlayerPoke1.PP[choice - 1]) == 0:
+            while True:
+                print("\n{} has no PP left for that move.".format(PlayerPoke1.name))
+                wait(1000)
+                choice = askForLimitedNumber("Pick a number: ", 1, 4)
+                if not(int(PlayerPoke1.PP[choice - 1]) == 0):
+                    break
+        move_used = PlayerPoke1.moves[choice - 1]
+
+
+        #This section determines the move used by the rival Pokemon. It currently only takes into account the amount of damage that would be dealt by each move, and makes a weighted random selection, with each move having a weight of its damage plus its PP, times the move's accuracy. This system needs to be improved upon in the future.
+        rival_usable_moves = []
+        try:
+            score1 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[0]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[0] * int(RivalPoke1.GetMove(move_used)[6])
+        except:
+            score1 = RivalPoke1.PP[0]
+        try:
+            score2 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[1]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[1] * int(RivalPoke1.GetMove(move_used)[6])
+        except:
+            score2 = RivalPoke1.PP[1]
+        try:
+            score3 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[2]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[2] * int(RivalPoke1.GetMove(move_used)[6])
+        except:
+            score3 = RivalPoke1.PP[2]
+        try:
+            score4 = (RivalPoke1.GetDamage(PlayerPoke1, RivalPoke1.moves[3]) * int(RivalPoke1.GetMove(move_used)[6])) + RivalPoke1.PP[3] * int(RivalPoke1.GetMove(move_used)[6])
+        except:
+            score4 = RivalPoke1.PP[3]
+
+
+
+        for i in range(score1):
+            rival_usable_moves.append(RivalPoke1.moves[0])
+        for i in range(score2):
+            rival_usable_moves.append(RivalPoke1.moves[1])
+        for i in range(score3):
+            rival_usable_moves.append(RivalPoke1.moves[2])
+        for i in range(score4):
+            rival_usable_moves.append(RivalPoke1.moves[3])
+
+        rival_move_used = rival_usable_moves[random.randint(0,len(rival_usable_moves))]
         
-    rival_move_used = rival_usable_moves[random.randint(0,len(rival_usable_moves))]
+    #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        if PlayerPoke1.SPD >= RivalPoke1.SPD:
+            playerUseMove()
+            wait(2000)
+        else:
+            rivalUseMove()
+            wait(2000)
+
+
+
+        if PlayerPoke1.hp < 1:
+            print("{} fainted.".format(PlayerPoke1.name))
+            wait(2000)
+            print("You lost.")
+            PlayerPoke1.hp = PlayerPoke1.Max_HP
+            RivalPoke1.hp = PlayerPoke1.Max_HP
+            PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
+            RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
+            input("Type anything to continue: ")
+            return
+        elif RivalPoke1.hp < 1:
+            print("Rival {} fainted!".format(RivalPoke1.name))
+            wait(2000)
+            print("You won!")
+            PlayerPoke1.hp = PlayerPoke1.Max_HP
+            RivalPoke1.hp = PlayerPoke1.Max_HP
+            PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
+            RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
+            input("Type anything to continue: ")
+            return
+
+        if PlayerPoke1.SPD >= RivalPoke1.SPD:
+            rivalUseMove()
+            wait(2000)
+        else:
+            playerUseMove()
+            wait(2000)
+
+
+
+        if PlayerPoke1.hp < 1:
+            print("{} fainted.".format(PlayerPoke1.name))
+            wait(2000)
+            print("You lost.")
+            PlayerPoke1.hp = PlayerPoke1.Max_HP
+            RivalPoke1.hp = PlayerPoke1.Max_HP
+            PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
+            RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
+            input("Type anything to continue: ")
+            return
+        elif RivalPoke1.hp < 1:
+            print("Rival {} fainted!".format(RivalPoke1.name))
+            wait(2000)
+            print("You won!")
+            PlayerPoke1.hp = PlayerPoke1.Max_HP
+            RivalPoke1.hp = PlayerPoke1.Max_HP
+            PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
+            RivalPoke1.PP = [int(RivalPoke1.GetMove(i)[4]) for i in RivalPoke1.moves]
+            input("Type anything to continue: ")
+            return
+
+def mainMenu():
+    global PlayerPoke1
+    global RivalPoke1
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    print('''
+===============================================================
+|  __  __          _            __  __                        |
+| |  \/  |  __ _  (_)  _ _     |  \/  |  ___   _ _    _  _    |
+| | |\/| | / _` | | | | ' \    | |\/| | / -_) | ' \  | || |   |
+| |_|  |_| \__,_| |_| |_||_|   |_|  |_| \___| |_||_|  \_,_|   |
+|                                                             |
+===============================================================
+ ''')
+                                                          
+    print("Welcome to the Pokémon Battle Simulator!")
+    print("Please select an option below:\n")
+    print("1. Load from save file")
+    print("2. Create new Pokémon to battle")
+    print("3. Battle with existing Pokémon")
+    print("4. Manage saves")
+    print("5. About")
+    print("6. How to play")
+    print("7. Quit")
+    choice = askForLimitedNumber("\nEnter a number: ", 1, 7)
+
+
+    if choice == 1:
+        getInfoFromSave()
+        mainMenu()
+    elif choice == 2:
+        makeNewPokemon()
+    elif choice == 3:
+        if PlayerPoke1 == None or RivalPoke1 == None:
+            print("You haven't loaded a save file!")
+            print("Load a save file or make new Pokémon before battling!")
+            input("Type anything to continue: ")
+            print("")
+            mainMenu()
+        else:
+            battle()
+            mainMenu()
+    elif choice == 4:
+        manageMenu()
+    elif choice == 5:
+        print('''
+Hello there, DR4G0NW4RR10R here, and this is my Pokémon Battle simulator.
+I made this project in Python 3, and I am improving it as time goes on, adding
+more little features and things. Currently, this project had over 1200
+lines of code!
+
+This is not a perfect game, and there will be bugs. If you do find a bug or
+two, please do let me know and I will do my best to patch it up.
+
+If you would like a specific feature added, let me know and I'll see if I can
+implement it.
+
+Feedback link:
+https://forms.gle/wdV6MFvbZbu76ow19
+
+Special thanks to my beta testers for being amazing and trying this game:
+- No one yet :*(
+        ''')
+        wait(5000)
+        input("Type anything to continue ")
+        mainMenu()
+    elif choice == 6:
+        print('''
+Here are the basics of the game:
+
+The Pokémon Battle Simulator is a simulator to simulate two Pokémon fighting
+each other. You, the player, can specify almost all aspects of these Pokémon.
+If you have an existing save file, it will have the information of the two
+Pokémon that have been made. Included by default is a single save file to
+serve as a preset battle, should you be interested.
+
+Alternitavely, you can create two brand new Pokémon to battle with and pit
+them up against each other! If you do this, you will be prompted to enter
+information for these Pokémon.
+
+Please note that currently, Status, Abilities, and Pokémon Nature are
+unimplemented, they cannnot be utilized in battle.
+        ''')
+        wait(5000)
+        input("Type anything to continue ")
+        mainMenu()
+    elif choice == 7:
+        print("Bye!")
+        log("Program terminated")
+        sys.exit(0)
+
+def manageMenu():
+    global PlayerPoke1
+    global RivalPoke1
+    global playername
+    global rivalname
+    global choice
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    print('''
+===============================================================================
+|  __  __                                       ___                           |
+| |  \/  |  __ _   _ _    __ _   __ _   ___    / __|  __ _  __ __  ___   ___  |
+| | |\/| | / _` | | ' \  / _` | / _` | / -_)   \__ \ / _` | \ V / / -_) (_-<  |
+| |_|  |_| \__,_| |_||_| \__,_| \__, | \___|   |___/ \__,_|  \_/  \___| /__/  |
+|                               |___/                                         |
+===============================================================================
+    ''')
+    print("Managing saves")
+    print("Please select an option below:\n")
+    print("1. Save current Pokémon to main save")
+    print("2. Save current Pokémon to backup save")
+    print("3. Create backup of main save")
+    print("4. Override main save with backup save")
+    print("5. Peek into a save")
+    print("6. Back to main menu")
+    choice = askForLimitedNumber("\nEnter a number: ", 1, 6)
     
-    
-    if PlayerPoke1.SPD >= RivalPoke1.SPD:
-        playerUseMove()
+    if choice == 1:
+        if PlayerPoke1 == None or RivalPoke1 == None:
+            print("Create some Pokémon first!")
+            wait(2000)
+            manageMenu()
+        else:
+            save_1 = playername
+            save_2 = rivalname
+            save_3 = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(PlayerPoke1.name, PlayerPoke1.pokemon, PlayerPoke1.level, PlayerPoke1.p_type[0], RivalPoke1.p_type[1], PlayerPoke1.moves[0], PlayerPoke1.moves[1], PlayerPoke1.moves[2], PlayerPoke1.moves[3], PlayerPoke1.HP_EV, PlayerPoke1.ATK_EV, PlayerPoke1.DEF_EV, PlayerPoke1.SPD_EV, PlayerPoke1.Sp_EV, PlayerPoke1.HP_IV, PlayerPoke1.ATK_IV, PlayerPoke1.DEF_IV, PlayerPoke1.SPD_IV, PlayerPoke1.Sp_IV, PlayerPoke1.hp)
+            save_4 = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(RivalPoke1.name, RivalPoke1.pokemon, RivalPoke1.level, RivalPoke1.p_type[0], RivalPoke1.p_type[1], RivalPoke1.moves[0], RivalPoke1.moves[1], RivalPoke1.moves[2], RivalPoke1.moves[3], RivalPoke1.HP_EV, RivalPoke1.ATK_EV, RivalPoke1.DEF_EV, RivalPoke1.SPD_EV, RivalPoke1.Sp_EV, RivalPoke1.HP_IV, RivalPoke1.ATK_IV, RivalPoke1.DEF_IV, RivalPoke1.SPD_IV, RivalPoke1.Sp_IV, RivalPoke1.hp)
+            
+            savefile = open("Saves/save.txt", "w")
+            savefile.write(save_1)
+            savefile.write("\n")
+            savefile.write(save_2)
+            savefile.write("\n")
+            savefile.write(save_3)
+            savefile.write("\n")
+            savefile.write(save_4)
+            savefile.close()
+            print("Save sucessfully updated!")
+            wait(2000)
+            manageMenu()
+    elif choice == 2:
+        if PlayerPoke1 == None or RivalPoke1 == None:
+            print("Create some Pokémon first!")
+            wait(2000)
+            manageMenu()
+        else:
+            save_1 = playername
+            save_2 = rivalname
+            save_3 = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(PlayerPoke1.name, PlayerPoke1.pokemon, PlayerPoke1.level, PlayerPoke1.p_type[0], RivalPoke1.p_type[1], PlayerPoke1.moves[0], PlayerPoke1.moves[1], PlayerPoke1.moves[2], PlayerPoke1.moves[3], PlayerPoke1.HP_EV, PlayerPoke1.ATK_EV, PlayerPoke1.DEF_EV, PlayerPoke1.SPD_EV, PlayerPoke1.Sp_EV, PlayerPoke1.HP_IV, PlayerPoke1.ATK_IV, PlayerPoke1.DEF_IV, PlayerPoke1.SPD_IV, PlayerPoke1.Sp_IV, PlayerPoke1.hp)
+            save_4 = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(RivalPoke1.name, RivalPoke1.pokemon, RivalPoke1.level, RivalPoke1.p_type[0], RivalPoke1.p_type[1], RivalPoke1.moves[0], RivalPoke1.moves[1], RivalPoke1.moves[2], RivalPoke1.moves[3], RivalPoke1.HP_EV, RivalPoke1.ATK_EV, RivalPoke1.DEF_EV, RivalPoke1.SPD_EV, RivalPoke1.Sp_EV, RivalPoke1.HP_IV, RivalPoke1.ATK_IV, RivalPoke1.DEF_IV, RivalPoke1.SPD_IV, RivalPoke1.Sp_IV, RivalPoke1.hp)
+            
+            print("Name the backup. Type CANCEL to cancel")
+            print("WARNING! Entering the name of an existing backup will override it!")
+            choice = input("Enter a name: ")
+            if choice == "CANCEL":
+                print("action cancelled.")
+                wait(2000)
+                manageMenu()
+            
+            savefile = open("Saves/{}.txt".format(choice), "w")
+            savefile.write(save_1)
+            savefile.write("\n")
+            savefile.write(save_2)
+            savefile.write("\n")
+            savefile.write(save_3)
+            savefile.write("\n")
+            savefile.write(save_4)
+            savefile.close()
+            print("Sucessfully saved backup as \"{}.txt\" in the Saves folder.".format(choice))
+            wait(4000)
+            manageMenu()
+    elif choice == 3:
+        print("Name the backup. Type CANCEL to cancel")
+        print("WARNING! Entering the name of an existing backup will override it!")
+        choice = input("Enter a name: ")
+        if choice == "CANCEL":
+                print("action cancelled.")
+                wait(2000)
+                manageMenu()
+                
+        copyfile("Saves/save.txt", "Saves/{}.txt".format(choice))
+        print("Sucessfully saved backup as \"{}.txt\" in the Saves folder.".format(choice))
+        wait(4000)
+        manageMenu()
+    elif choice == 4:
+        choice = input("Enter name of backup. Type CANCEL to cancel. ")
+        if choice == "CANCEL":
+                print("action cancelled.")
+                wait(2000)
+                manageMenu()
+        try:
+            copyfile("Saves/{}.txt".format(choice), "Saves/save.txt")
+        except:
+            print("That backup file does not exist.")
+            wait(2000)
+            manageMenu()
+        print("Main save sucessfully overridden with {}.txt".format(choice))
         wait(2000)
-    else:
-        rivalUseMove()
-        wait(2000)
-    
-    
-    
-    if PlayerPoke1.hp < 1:
-        print("{} fainted.".format(PlayerPoke1.name))
-        wait(1000)
-        print("You lost.")
-        break
-    elif RivalPoke1.hp < 1:
-        print("Rival {} fainted!".format(RivalPoke1.name))
-        wait(1000)
-        print("You won!")
-        break
-        
-        
-        
-    if PlayerPoke1.SPD >= RivalPoke1.SPD:
-        rivalUseMove()
-        wait(2000)
-    else:
-        playerUseMove()
-        wait(2000)
-        
-        
-        
-    if PlayerPoke1.hp < 1:
-        print("{} fainted.".format(PlayerPoke1.name))
-        wait(1000)
-        print("You lost.")
-        break
-    elif RivalPoke1.hp < 1:
-        print("Rival {} fainted!".format(RivalPoke1.name))
-        wait(1000)
-        print("You won!")
-        break
+        manageMenu()
+    elif choice == 5:
+        peekname = input("Enter a save name. Enter \"save\" to peek into the main save: ")
+        skipExcept = False
+        try:
+            peek_file = open("Saves/{}.txt".format(peekname), "r")
+            savedata = []
+
+            for line in peek_file.readlines():
+                otherlist.append(line.replace('\n', ''))
+            for i in otherlist:
+                savedata.append(i.split(','))
+
+            print("\nPeeking into save....\n")
+            playername = savedata[0][0]
+            print("Player name: {}".format(playername))
+            rivalname = savedata[1][0]
+            print("Rival name: {}".format(rivalname))
 
 
 
+            if savedata[2][4] == "None":
+                PeekPlayerPoke1 = Pokemon(name=savedata[2][0], p_type=[savedata[2][3]], pokemon=savedata[2][1], level=int(savedata[2][2]), hp=int(savedata[2][19]))
+            else:
+                PeekPlayerPoke1 = Pokemon(name=savedata[2][0], p_type=[savedata[2][3], savedata[2][4]], pokemon=savedata[2][1], level=int(savedata[2][2]), hp=int(savedata[2][19]))
 
-log("Program terminated")
+            PeekPlayerPoke1.HP_EV = int(savedata[2][9])
+            PeekPlayerPoke1.ATK_EV = int(savedata[2][10])
+            PeekPlayerPoke1.DEF_EV = int(savedata[2][11])
+            PeekPlayerPoke1.SPD_EV = int(savedata[2][12])
+            PeekPlayerPoke1.Sp_EV = int(savedata[2][13])
+            PeekPlayerPoke1.HP_IV = int(savedata[2][14])
+            PeekPlayerPoke1.ATK_IV = int(savedata[2][15])
+            PeekPlayerPoke1.DEF_IV = int(savedata[2][16])
+            PeekPlayerPoke1.SPD_IV = int(savedata[2][17])
+            PeekPlayerPoke1.Sp_IV = int(savedata[2][18])
+            PeekPlayerPoke1.UpdateStats()
+            PeekPlayerPoke1.hp = int(savedata[2][19])
+            PeekPlayerPoke1.moves = savedata[2][5:9]
+            PeekPlayerPoke1.PP = [int(PeekPlayerPoke1.GetMove(i)[4]) for i in PeekPlayerPoke1.moves]
+
+            print("{}'s Pokemon: {} the level {} {}.".format(playername, PeekPlayerPoke1.name, PeekPlayerPoke1.level, PeekPlayerPoke1.pokemon))
+
+
+            if savedata[3][4] == "None":
+                PeekRivalPoke1 = Pokemon(name=savedata[3][0], p_type=[savedata[3][3]], pokemon=savedata[3][1], level=int(savedata[3][2]), hp=int(savedata[3][19]))
+            else:
+                PeekRivalPoke1 = Pokemon(name=savedata[3][0], p_type=[savedata[3][3], savedata[3][4]], pokemon=savedata[3][1], level=int(savedata[3][2]), hp=int(savedata[3][19]))
+
+            PeekRivalPoke1.HP_EV = int(savedata[3][9])
+            PeekRivalPoke1.ATK_EV = int(savedata[3][10])
+            PeekRivalPoke1.DEF_EV = int(savedata[3][11])
+            PeekRivalPoke1.SPD_EV = int(savedata[3][12])
+            PeekRivalPoke1.Sp_EV = int(savedata[3][13])
+            PeekRivalPoke1.HP_IV = int(savedata[3][14])
+            PeekRivalPoke1.ATK_IV = int(savedata[3][15])
+            PeekRivalPoke1.DEF_IV = int(savedata[3][16])
+            PeekRivalPoke1.SPD_IV = int(savedata[3][17])
+            PeekRivalPoke1.Sp_IV = int(savedata[3][18])
+            PeekRivalPoke1.UpdateStats()
+            PeekRivalPoke1.hp = int(savedata[3][19])
+            PeekRivalPoke1.moves = savedata[3][5:9]
+            PeekRivalPoke1.PP = [int(PeekRivalPoke1.GetMove(i)[4]) for i in PeekRivalPoke1.moves]
+
+            print("{}'s Pokemon: {} the level {} {}.".format(rivalname, PeekRivalPoke1.name, PeekRivalPoke1.level, PeekRivalPoke1.pokemon))
+            log("\n\nSave file {} peeked at: {} vs rival {}.".format(peekname, PeekPlayerPoke1.name, PeekRivalPoke1.name))
+            print("")
+            input("Type anything to continue ")
+            skipExcpet = True
+            manageMenu()
+        except:
+            if not(skipExcept):
+                if choice == 6:
+                    sys.exit(0)
+                print("Something went wrong. Make sure you typed in the name correctly, and that the save is formatted correctly.")
+                wait(3000)
+                manageMenu()
+    elif choice == 6:
+        mainMenu()
+
+#=====================================================================================================================
+
+log("\n\n\n\nProgram initiated ==========================================================================")
+log("Please note the log currently only records battles.")
+
+
+mainMenu()
+
+
+log("Program terminated.")
