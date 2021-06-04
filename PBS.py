@@ -681,7 +681,7 @@ def makeNewPokemon():
         print("")
         PlayerPoke1.moves.append(allMoves[number][1])
     while len(PlayerPoke1.moves) < 4:
-        PlayerPoke1.moves.append(None)
+        PlayerPoke1.moves.append("None")
     print("{}'s moveset: {}, {}, {}, and {}.\n".format(PlayerPoke1.name, PlayerPoke1.moves[0], PlayerPoke1.moves[1], PlayerPoke1.moves[2], PlayerPoke1.moves[3]))
 
     PlayerPoke1.PP = [int(PlayerPoke1.GetMove(i)[4]) for i in PlayerPoke1.moves]
@@ -786,7 +786,7 @@ def makeNewPokemon():
         print("")
         RivalPoke1.moves.append(allMoves[number][1])
     while len(RivalPoke1.moves) < 4:
-        RivalPoke1.moves.append(None)
+        RivalPoke1.moves.append("None")
     print("{}'s moveset: {}, {}, {}, and {}.\n".format(RivalPoke1.name, RivalPoke1.moves[0], RivalPoke1.moves[1], RivalPoke1.moves[2], RivalPoke1.moves[3]))
 
 
