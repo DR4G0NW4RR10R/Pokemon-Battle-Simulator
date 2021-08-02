@@ -1026,7 +1026,7 @@ Alternitavely, you can create two brand new Pokémon to battle with and pit
 them up against each other! If you do this, you will be prompted to enter
 information for these Pokémon.
 
-Please note that currently, Status, Abilities, and Pokémon Nature are
+Please note that currently Statuses, Abilities, and Pokémon Natures are
 unimplemented, they cannnot be utilized in battle.
         ''')
         wait(5000)
