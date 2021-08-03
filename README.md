@@ -1,4 +1,7 @@
 # Pokemon-Battle-Simulator
+Required: Python 3.5 or more, Colorama library: https://pypi.org/project/colorama/
+
+
 Hello there, DR4G0NW4RR10R here, and this is my Pokémon Battle simulator.
 I made this project in Python 3, and I am improving it as time goes on, adding
 more little features and things. Currently, this project had over 1200
@@ -30,5 +33,5 @@ Alternitavely, you can create two brand new Pokémon to battle with and pit
 them up against each other! If you do this, you will be prompted to enter
 information for these Pokémon.
 
-Please note that currently, Status, Abilities, and Pokémon Nature are
+Please note that currently Statuses, Abilities, and Pokémon Natures are
 unimplemented, they cannnot be utilized in battle.
