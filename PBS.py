@@ -97,7 +97,7 @@ def playerUseMove():
     global PlayerPoke1
     global RivalPoke1
     global choice
-    print("\n{} used {}!".format(PlayerPoke1.name, move_used))
+    print("\n" + Fore.Cyan + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL + " used {}!".format(move_used))
     wait(2000)
     if random.randrange(0,100) < int(PlayerPoke1.GetMove(move_used)[6]):
         if move_used == "Dragon Rage":
@@ -285,11 +285,21 @@ class Pokemon:
         else:
             self.stage = 'stage ' + getStat(self.pokemon, 2)
         self.number = int(getStat(self.pokemon, 0))
+        
+        
         self.Base_HP = int(getStat(self.pokemon, 3))
         self.Base_ATK = int(getStat(self.pokemon, 4))
         self.Base_DEF = int(getStat(self.pokemon, 5))
         self.Base_SPD = int(getStat(self.pokemon, 6))
         self.Base_Sp = int(getStat(self.pokemon, 7))
+        
+        self.Effective_HP = self.Base_HP
+        self.Effective_ATK = self.Base_ATK
+        self.Effective_DEF = self.Base_DEF
+        self.Effective_SPD = self.Base_SPD
+        self.Effective_Sp = self.Base_Sp
+        
+        
         self.leveling_rate = (getStat(self.pokemon, 8))
         #self.Until_next_level = None
         #for line in leveling_rates:
@@ -316,11 +326,11 @@ class Pokemon:
             self.HP_IV += 2
         if self.Sp_IV%2 == 1:
             self.HP_IV += 1
-        self.Max_HP = round((((self.Base_HP + self.HP_IV)*2 +(self.HP_EV/4) * self.level)/100) + self.level + 10)
-        self.ATK = (((self.Base_ATK + self.ATK_IV)*2 +(self.ATK_EV/4) * self.level)/100) + 5
-        self.DEF = (((self.Base_DEF + self.DEF_IV)*2 +(self.DEF_EV/4) * self.level)/100) + 5
-        self.SPD = (((self.Base_SPD + self.SPD_IV)*2 +(self.SPD_EV/4) * self.level)/100) + 5
-        self.Sp = (((self.Base_Sp + self.Sp_IV)*2 +(self.Sp_EV/4) * self.level)/100) + 5
+        self.Max_HP = round((((self.Effective_HP + self.HP_IV)*2 +(self.HP_EV/4) * self.level)/100) + self.level + 10)
+        self.ATK = (((self.Effective_ATK + self.ATK_IV)*2 +(self.ATK_EV/4) * self.level)/100) + 5
+        self.DEF = (((self.Effective_DEF + self.DEF_IV)*2 +(self.DEF_EV/4) * self.level)/100) + 5
+        self.SPD = (((self.Effective_SPD + self.SPD_IV)*2 +(self.SPD_EV/4) * self.level)/100) + 5
+        self.Sp = (((self.Effective_Sp + self.Sp_IV)*2 +(self.Sp_EV/4) * self.level)/100) + 5
         if self.hp == True:
             self.hp = self.Max_HP
         if self.hp > self.Max_HP:
@@ -333,11 +343,11 @@ class Pokemon:
                 return "{} is a {} {}\n({} Pokemon) at level {}.\nHP: {}/{}.".format(self.name, self.stage, self.pokemon, self.p_type[0], self.level, self.hp, self.Max_HP)
     
     def UpdateStats(self):
-        self.Max_HP = round((((self.Base_HP + self.HP_IV)*2 +(self.HP_EV/4) * self.level)/100) + self.level + 10)
-        self.ATK = (((self.Base_ATK + self.ATK_IV)*2 +(self.ATK_EV/4) * self.level)/100) + 5
-        self.DEF = (((self.Base_DEF + self.DEF_IV)*2 +(self.DEF_EV/4) * self.level)/100) + 5
-        self.SPD = (((self.Base_SPD + self.SPD_IV)*2 +(self.SPD_EV/4) * self.level)/100) + 5
-        self.Sp = (((self.Base_Sp + self.Sp_IV)*2 +(self.Sp_EV/4) * self.level)/100) + 5
+        self.Max_HP = round((((self.Effective_HP + self.HP_IV)*2 +(self.HP_EV/4) * self.level)/100) + self.level + 10)
+        self.ATK = (((self.Effective_ATK + self.ATK_IV)*2 +(self.ATK_EV/4) * self.level)/100) + 5
+        self.DEF = (((self.Effective_DEF + self.DEF_IV)*2 +(self.DEF_EV/4) * self.level)/100) + 5
+        self.SPD = (((self.Effective_SPD + self.SPD_IV)*2 +(self.SPD_EV/4) * self.level)/100) + 5
+        self.Sp = (((self.Effective_Sp + self.Sp_IV)*2 +(self.Sp_EV/4) * self.level)/100) + 5
     def GetStrongAgainst(self):
         return type_matchups[self.p_type][StrongAgainst]
     def GetWeakAgainst(self):
@@ -346,11 +356,12 @@ class Pokemon:
         return type_matchups[self.p_type][IneffectiveAgainst]
     def Level_up(self):
         self.level += 1
-        self.Base_HP += ((self.Base_HP/50) + ((self.HP_IV + self.HP_EV)/100))
-        self.Base_ATK += ((self.Base_ATK/50) + ((self.ATK_EV + self.ATK_EV)/100))
-        self.Base_DEF += ((self.Base_DEF/50) + ((self.DEF_IV + self.DEF_EV)/100))
-        self.Base_SPD += ((self.Base_SPD/50) + ((self.SPD_IV + self.SPD_EV)/100))
-        self.Base_Sp += ((self.Base_Sp/50) + ((self.Sp_IV + self.Sp_EV)/100))
+        self.Effective_HP += ((self.Base_HP/50) + ((self.HP_IV + self.HP_EV)/100))
+        self.Effective_ATK += ((self.Base_ATK/50) + ((self.ATK_EV + self.ATK_EV)/100))
+        self.Effective_DEF += ((self.Base_DEF/50) + ((self.DEF_IV + self.DEF_EV)/100))
+        self.Effective_SPD += ((self.Base_SPD/50) + ((self.SPD_IV + self.SPD_EV)/100))
+        self.Effective_Sp += ((self.Base_Sp/50) + ((self.Sp_IV + self.Sp_EV)/100))
+        self.UpdateStats()
     def Evolve(self):
         pass
     def GetMove(self, i):
@@ -516,8 +527,12 @@ def getInfoFromSave():
     
     if savedata[2][4] == "None":
         PlayerPoke1 = Pokemon(name=savedata[2][0], p_type=[savedata[2][3]], pokemon=savedata[2][1], level=int(savedata[2][2]), hp=int(savedata[2][19]))
+        for i in range(PlayerPoke1.level):
+            PlayerPoke1.Level_up()
     else:
         PlayerPoke1 = Pokemon(name=savedata[2][0], p_type=[savedata[2][3], savedata[2][4]], pokemon=savedata[2][1], level=int(savedata[2][2]), hp=int(savedata[2][19]))
+        for i in range(PlayerPoke1.level):
+            PlayerPoke1.Level_up()
 
     PlayerPoke1.HP_EV = int(savedata[2][9])
     PlayerPoke1.ATK_EV = int(savedata[2][10])
@@ -539,8 +554,12 @@ def getInfoFromSave():
     
     if savedata[3][4] == "None":
         RivalPoke1 = Pokemon(name=savedata[3][0], p_type=[savedata[3][3]], pokemon=savedata[3][1], level=int(savedata[3][2]), hp=int(savedata[3][19]))
+        for i in range(RivalPoke1.level):
+            RivalPoke1.Level_up()
     else:
         RivalPoke1 = Pokemon(name=savedata[3][0], p_type=[savedata[3][3], savedata[3][4]], pokemon=savedata[3][1], level=int(savedata[3][2]), hp=int(savedata[3][19]))
+        for i in range(RivalPoke1.level):
+            RivalPoke1.Level_up()
         
     RivalPoke1.HP_EV = int(savedata[3][9])
     RivalPoke1.ATK_EV = int(savedata[3][10])
@@ -626,8 +645,12 @@ def makeNewPokemon():
     
     if Type2 == "None":
         PlayerPoke1 = Pokemon(name=PokeName, p_type=[Type1], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        for i in range(PlayerlPoke1.level):
+            PlayerPoke1.Level_up()
     else:
         PlayerPoke1 = Pokemon(name=PokeName, p_type=[Type1, Type2], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        for i in range(PlayerPoke1.level):
+            PlayerPoke1.Level_up()
 
     if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(PlayerPoke1.name, PlayerPoke1.name), ["yes", "no"]) == "yes":
         EV1 = askForLimitedNumber("Enter {}'s HP EV: ".format(PokeName), 0, 252)
@@ -729,8 +752,12 @@ def makeNewPokemon():
         
     if Type2 == "None":
         RivalPoke1 = Pokemon(name=PokeName, p_type=[Type1], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        for i in range(RivalPoke1.level):
+            RivalPoke1.Level_up()
     else:
         RivalPoke1 = Pokemon(name=PokeName, p_type=[Type1, Type2], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        for i in range(RivalPoke1.level):
+            RivalPoke1.Level_up()
     
     if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no"]) == "yes":
         EV1 = askForLimitedNumber("Enter {}'s HP EV: ".format(PokeName), 0, 252)
@@ -904,7 +931,7 @@ def battle():
 
 
         if PlayerPoke1.hp < 1:
-            print(Fore.CYAN + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL = "fainted.")
+            print(Fore.CYAN + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL + " fainted.")
             wait(2000)
             print("You lost.")
             PlayerPoke1.hp = PlayerPoke1.Max_HP
@@ -915,7 +942,7 @@ def battle():
             print(Style.NORMAL)
             return
         elif RivalPoke1.hp < 1:
-            print("Rival " + Fore.CYAN + Style.BRIGHT + "{}".format(RivalPoke1.name) + Style.RESET_ALL + "fainted!")
+            print("Rival " + Fore.CYAN + Style.BRIGHT + "{}".format(RivalPoke1.name) + Style.RESET_ALL + " fainted!")
             wait(2000)
             print("You won!")
             PlayerPoke1.hp = PlayerPoke1.Max_HP
@@ -936,7 +963,7 @@ def battle():
 
 
         if PlayerPoke1.hp < 1:
-            print(Fore.CYAN + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL = "fainted.")
+            print(Fore.CYAN + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL + " fainted.")
             wait(2000)
             print("You lost.")
             PlayerPoke1.hp = PlayerPoke1.Max_HP
@@ -947,7 +974,7 @@ def battle():
             print(Style.NORMAL)
             return
         elif RivalPoke1.hp < 1:
-            print("Rival " + Fore.CYAN + Style.BRIGHT + "{}".format(RivalPoke1.name) + Style.RESET_ALL + "fainted!")
+            print("Rival " + Fore.CYAN + Style.BRIGHT + "{}".format(RivalPoke1.name) + Style.RESET_ALL + " fainted!")
             wait(2000)
             print("You won!")
             PlayerPoke1.hp = PlayerPoke1.Max_HP
