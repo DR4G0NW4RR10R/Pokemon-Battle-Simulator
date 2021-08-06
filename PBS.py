@@ -45,7 +45,7 @@ def rivalUseMove():
     global PlayerPoke1
     global RivalPoke1
     global choice
-    print("\n{} used {}!".format(RivalPoke1.name, rival_move_used))
+    print("\n" + Fore.CYAN + Style. BRIGHT + "{}".format(RivalPoke1.name) + Style.RESET_ALL + " used {}!".format(rival_move_used))
     wait(2000)
     if random.randrange(0,100) < int(RivalPoke1.GetMove(rival_move_used)[6]):
         if rival_move_used == "Dragon Rage":
@@ -97,7 +97,7 @@ def playerUseMove():
     global PlayerPoke1
     global RivalPoke1
     global choice
-    print("\n" + Fore.Cyan + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL + " used {}!".format(move_used))
+    print("\n" + Fore.CYAN + Style.BRIGHT + "{}".format(PlayerPoke1.name) + Style.RESET_ALL + " used {}!".format(move_used))
     wait(2000)
     if random.randrange(0,100) < int(PlayerPoke1.GetMove(move_used)[6]):
         if move_used == "Dragon Rage":
@@ -349,11 +349,11 @@ class Pokemon:
         self.SPD = (((self.Effective_SPD + self.SPD_IV)*2 +(self.SPD_EV/4) * self.level)/100) + 5
         self.Sp = (((self.Effective_Sp + self.Sp_IV)*2 +(self.Sp_EV/4) * self.level)/100) + 5
     def GetStrongAgainst(self):
-        return type_matchups[self.p_type][StrongAgainst]
+        return type_matchups[self.p_type]['StrongAgainst']
     def GetWeakAgainst(self):
-        return type_matchups[self.p_type][WeakAgainst]
+        return type_matchups[self.p_type]['WeakAgainst']
     def GetIneffectiveAgainst(self):
-        return type_matchups[self.p_type][IneffectiveAgainst]
+        return type_matchups[self.p_type]['IneffectiveAgainst']
     def Level_up(self):
         self.level += 1
         self.Effective_HP += ((self.Base_HP/50) + ((self.HP_IV + self.HP_EV)/100))
@@ -422,7 +422,7 @@ class Pokemon:
             var9 = var8 * TypeBonus
             log("var10 = var9 * STAB = {}".format(var9 * STAB))
             var10 = var9 * STAB
-            log("var11 = var10 * Random = {}".format(Var10 * Random))
+            log("var11 = var10 * Random = {}".format(var10 * Random))
             var11 = var10 * Random
             log("var12 = var11 rounded = {}".format(int(var11)))
             var12 = int(var11)
@@ -601,58 +601,106 @@ def makeNewPokemon():
     input(Style.DIM + "Type anything to continue: ")
     print(Style.NORMAL)
     print("\nA note for Pokenerds: This game is set, to the best of my ability, in Generation 1, with all of it's implications.")
-    answer = input(Style.DIM + "Type anything to continue: ")
+    answer = input(Style.DIM + "Type anything to continue. Pokenerds: type Info for more information : ")
     print(Style.NORMAL)
     if answer == "info":
         print("\nWhen prompted to enter a number referencing a Pokemon, check \"pokemon_stats.csv\" for a list of Pokemon.\n")
         print("When prompted to enter a number referencing a move, check \"Pokemon Moves.csv\" for a list of moves.\n")
         print("In Gen I, both Sp. ATK and Sp. DEF are controlled by the single Special stat, not individual stats.\nThis game also has that mechanic implemented. I recommend checking the Bulbapedia periodically.\n")
         print("As in Gen I, all moves that are 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', or 'Dark' type are considered\nspecial, and all other types are physical.\n")
-        print("Currnenly, all EVs are set to 0 and cannot be increased.\n")
-        print("IVs are randomized, using the traditional Pokemon IV randomization.\n")
-        print("In the future, EVs and IVs may be able to be customized.\n")
-        print("There is no Pokerus and there are no shinies.\n")
+        #print("Currnenly, all EVs are set to 0 and cannot be increased.\n")
+        #print("IVs are randomized, using the traditional Pokemon IV randomization.\n")
+        #print("In the future, EVs and IVs may be able to be customized.\n")
+        #print("There is no Pokerus and there are no shinies.\n")
         print("Currently, Status moves and Abilities are not yet implemented. They will not do anything.\n")
         print("IMPORTANT NOTE!! This game uses the EV calculations of Gen 3,\nas in Generations 1 and 2, the EV system was kinda off kilter. There is no EV gain from battles\nin this game.\n")
         answer = input("Type anything to continute. ")
+        
+    #customPoke = askList("Would you like to make a fully customized Pokemon as opposed to one of the preset 151? ", ["yes","no"])
+    customPoke = "no"
+    
+    
     print("")
     print("Let's begin.")
     wait(1000)
     playername = input("What is your name? ")
     print("Hello, {}.".format(playername))
     wait(500)
-    print("Start off by entering the number of the Pokemon YOU want to battle WITH.")
-    number = askForLimitedNumber("Enter a number: ", 1, 151)
-    PokeSpecies = pokemon_stats[number - 1][1]
-    print("You chose {}.".format(PokeSpecies))
-    if askList("Give it a nickname? ", ["yes","no"]) == "yes":
-        PokeName = input("Give {} a name: ".format(PokeSpecies))
+    
+    if customPoke == "no":
+        print("Start off by entering the number of the Pokemon YOU want to battle WITH.\nYou can refer to Pokemon_Info/pokemon_stats.csv for a list of Pokemon by number.")
+        number = askForLimitedNumber("Enter a number: ", 1, 151)
+        PokeSpecies = pokemon_stats[number - 1][1]
+        print("You chose {}.".format(PokeSpecies))
+        if askList("Give it a nickname? ", ["yes","no"]) == "yes":
+            PokeName = input("Give {} a name: ".format(PokeSpecies))
+        else:
+            PokeName = PokeSpecies.upper()
+        print("")
+        print("Say hi to {} the {}!".format(PokeName, PokeSpecies))
+        wait(2000)
+        print("<{}> Hi {}!\n".format(playername, PokeName))
+        wait(2000)
+        Type1 = askList("Currently, {}'s type cannot be determined by the program.\nEnter {}'s type (you can change it if you want!)\nIf {} is dual-type, enter the first type: ".format(PokeName, PokeName, PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+        Type2 = askList("If {} has a second type, enter it now. Otherwise, type \"None\". ".format(PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
+        PokeLevel = askForLimitedNumber("\nEnter {}'s level: ".format(PokeName), 1, 100)
+        
     else:
-        PokeName = PokeSpecies.upper()
-    print("")
-    print("Say hi to {} the {}!".format(PokeName, PokeSpecies))
-    wait(2000)
-    print("<{}> Hi {}!\n".format(playername, PokeName))
-    wait(2000)
-    Type1 = askList("Currently, {}'s type cannot be determined by the program.\nEnter {}'s type (you can change it if you want!)\nIf {} is dual-type, enter the first type: ".format(PokeName, PokeName, PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
-    Type2 = askList("If {} has a second type, enter it now. Otherwise, type \"None\". ".format(PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
-    PokeLevel = askForLimitedNumber("\nEnter {}'s level: ".format(PokeName), 1, 100)
+        
+        PokeSpecies = "CustomPokemon"
+        print("You are now making a custom Pokemon.")
+        wait(1000)
+        print("First, we will establish the base stats of this Pokemon.")
+        temp1 = askForLimitedNumber("What is this Pokemon's base HP? ", 1, 255)
+        temp2 = askForLimitedNumber("What is this Pokemon's base Attack? ", 1, 255)
+        temp3 = askForLimitedNumber("What is this Pokemon's base Defence? ", 1, 255)
+        temp4 = askForLimitedNumber("What is this Pokemon's base Speed? ", 1, 255)
+        temp5 = askForLimitedNumber("What is this Pokemon's base Special? ", 1, 255)
+        
+        print("\n\nLet's give your Pokemon some types.")
+        wait(1000)
+        answer = askForLimitedNumber("Will this Pokemon have 1 type or 2? ", 1, 2)
+        if answer == "1":
+            Type1 = askList("Enter your Pokemon's type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+            Type2 = "None"
+        else:
+            Type1 = askList("Enter your Pokemon's first type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+            Type2 = askList("Enter your Pokemon's second type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
+        
+        PokeLevel = askForLimitedNumber("Enter your Pokemon's level: ", 1, 100)
+        
+        PokeName = input("Finally, give your Pokemon a nickname: ")
+        
+        
+        
     if Type2 == "None":
         print("{} the {} is a {} Pokemon at level {}.\n".format(PokeName, PokeSpecies, Type1, PokeLevel))
     else:
-        print("{} the {} is a {}/{} Pokemon at level {}.\n".format(PokeName, PokeSpecies, Type1, Type2, PokeLevel))
+        print("{} the {} is a {}/{} Pokemon at level {}.\n".format(PokeName, PokeSpecies, Type1, Type2, PokeLevel))   
     
     
     if Type2 == "None":
         PlayerPoke1 = Pokemon(name=PokeName, p_type=[Type1], pokemon=PokeSpecies, level=PokeLevel, hp=True)
-        for i in range(PlayerlPoke1.level):
+        if customPoke == "yes":
+            PlayerPoke1.Base_HP = temp1
+            PlayerPoke1.Base_ATK = temp2
+            PlayerPoke1.Base_DEF = temp3
+            PlayerPoke1.Base_SPD = temp4
+            PlayerPoke1.Base_Sp = temp5 
+        for i in range(PlayerPoke1.level):
             PlayerPoke1.Level_up()
     else:
         PlayerPoke1 = Pokemon(name=PokeName, p_type=[Type1, Type2], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        if customPoke == "yes":
+            PlayerPoke1.Base_HP = temp1
+            PlayerPoke1.Base_ATK = temp2
+            PlayerPoke1.Base_DEF = temp3
+            PlayerPoke1.Base_SPD = temp4
+            PlayerPoke1.Base_Sp = temp5 
         for i in range(PlayerPoke1.level):
             PlayerPoke1.Level_up()
 
-    if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(PlayerPoke1.name, PlayerPoke1.name), ["yes", "no"]) == "yes":
+    if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(PlayerPoke1.name, PlayerPoke1.name), ["yes", "no", "Yes", "No"]) in ["yes", "Yes"]:
         EV1 = askForLimitedNumber("Enter {}'s HP EV: ".format(PokeName), 0, 252)
         EV2 = askForLimitedNumber("Enter {}'s ATK EV: ".format(PokeName), 0, 252)
         EV3 = askForLimitedNumber("Enter {}'s DEF EV: ".format(PokeName), 0, 252)
@@ -676,7 +724,7 @@ def makeNewPokemon():
         PlayerPoke1.SPD_EV = EV4
         PlayerPoke1.Sp_EV = EV1
 
-    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(PlayerPoke1.name, PlayerPoke1.name), ["yes", "no"]) == "yes":
+    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(PlayerPoke1.name, PlayerPoke1.name), ["yes", "no", "Yes", "No"]) in ["yes", "Yes"]:
         IV1 = askForLimitedNumber("Enter {}'s HP IV: ".format(PokeName), 0, 15)
         IV2 = askForLimitedNumber("Enter {}'s ATK IV: ".format(PokeName), 0, 15)
         IV3 = askForLimitedNumber("Enter {}'s DEF IV: ".format(PokeName), 0, 15)
@@ -691,16 +739,16 @@ def makeNewPokemon():
         
         
     PlayerPoke1.UpdateStats()
-    print("\n{} has {} max health.".format(PlayerPoke1.name, PlayerPoke1.Max_HP))
-    if askList("Would you like to set {}'s HP to something othen than maximum? ".format(PlayerPoke1.name),["yes", "no"]) == "yes":
-        PlayerPoke1.hp = askForLimitedNumber("Enter new HP: ", 1, PlayerPoke1.Max_HP)
-    else:
-        PlayerPoke1.hp = PlayerPoke1.Max_HP
+    #print("\n{} has {} max health.".format(PlayerPoke1.name, PlayerPoke1.Max_HP))
+    #if askList("Would you like to set {}'s HP to something othen than maximum? ".format(PlayerPoke1.name),["yes", "no"]) == "yes":
+    #    PlayerPoke1.hp = askForLimitedNumber("Enter new HP: ", 1, PlayerPoke1.Max_HP)
+    #else:
+    #    PlayerPoke1.hp = PlayerPoke1.Max_HP
     print("")
     print("Almost done!")
     wait(1000)
     print("Now it's time to give {} some moves".format(PlayerPoke1.name))
-    for i in range(askForLimitedNumber("{} can learn up to 4 moves. How many moves do you want to teach {}? ".format(PlayerPoke1.name, PlayerPoke1.name),1,4)):
+    for i in range(askForLimitedNumber("{} can learn up to 4 moves. How many moves do you want to teach {}?\nYou can refer to Pokemon_Info/Pokemon Moves.csv for a list of moves by number. ".format(PlayerPoke1.name, PlayerPoke1.name),1,4)):
         number = askForLimitedNumber("Enter a move number: ",1,165)
         if (PlayerPoke1.GetMove((allMoves[number][1])))[3] == 'Status':
             while True:
@@ -728,38 +776,78 @@ def makeNewPokemon():
 
     rivalname = input("Enter your rival's name: ")
     wait(500)
-    print("Start off by entering the number of the Pokemon YOU want to battle AGAINST.")
-    number = askForLimitedNumber("Enter a number: ", 1, 151)
-    PokeSpecies = pokemon_stats[number - 1][1]
-    print("You chose {}.".format(PokeSpecies))
-    if askList("Give it a nickname? ", ["yes","no"]) == "yes":
-        PokeName = input("Give {} a name: ".format(PokeSpecies))
+    #customPoke = askList("Would you like to make a fully customized Pokemon as opposed to one of the preset 151? ", ["yes","no"])
+    customePoke = "no"
+        
+    if customPoke == "no":
+        print("Start off by entering the number of the Pokemon YOU want to battle AGAINST.\nYou can refer to Pokemon_Info/pokemon_stats.csv for a list of Pokemon by number.")
+        number = askForLimitedNumber("Enter a number: ", 1, 151)
+        PokeSpecies = pokemon_stats[number - 1][1]
+        print("You chose {}.".format(PokeSpecies))
+        if askList("Give it a nickname? ", ["yes","no"]) == "yes":
+            PokeName = input("Give {} a name: ".format(PokeSpecies))
+        else:
+            PokeName = PokeSpecies.upper()
+        print("")
+        print("Say hi to {} the {}!".format(PokeName, PokeSpecies))
+        wait(2000)
+        print("<{}> Hi {}!\n".format(rivalname, PokeName))
+        wait(2000)
+        Type1 = askList("Currently, {}'s type cannot be determined by the program.\nEnter {}'s type (you can change it if you want!)\nIf {} is dual-type, enter the first type: ".format(PokeName, PokeName, PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+        Type2 = askList("If {} has a second type, enter it now. Otherwise, type \"None\". ".format(PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
+        PokeLevel = askForLimitedNumber("\nEnter {}'s level: ".format(PokeName), 1, 100)
+        
     else:
-        PokeName = PokeSpecies.upper()
-    print("")
-    print("{}, say hi to {} the {}!".format(rivalname, PokeName, PokeSpecies))
-    wait(2000)
-    print("<{}> Hi {}!\n".format(rivalname, PokeName))
-    wait(2000)
-    Type1 = askList("Currently, {}'s type cannot be determined by the program.\nEnter {}'s type (you can change it if you want!)\nIf {} is dual-type, enter the first type: ".format(PokeName, PokeName, PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
-    Type2 = askList("If {} has a second type, enter it now. Otherwise, type \"None\". ".format(PokeName), ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
-    PokeLevel = askForLimitedNumber("\nEnter {}'s level: ".format(PokeName), 1, 100)
-    if Type2 == "None":
-        print("{} the {} is a {} Pokemon at level {}.\n".format(PokeName, PokeSpecies, Type1, PokeLevel))
-    else:
-        print("{} the {} is a {}/{} Pokemon at level {}.\n".format(PokeName, PokeSpecies, Type1, Type2, PokeLevel))
+        
+        PokeSpecies = "CustomPokemon"
+        print("You are now making a custom Pokemon.")
+        wait(1000)
+        print("First, we will establish the base stats of this Pokemon.")
+        temp1 = askForLimitedNumber("What is this Pokemon's base HP? ", 1, 255)
+        temp2 = askForLimitedNumber("What is this Pokemon's base Attack? ", 1, 255)
+        temp3 = askForLimitedNumber("What is this Pokemon's base Defence? ", 1, 255)
+        temp4 = askForLimitedNumber("What is this Pokemon's base Speed? ", 1, 255)
+        temp5 = askForLimitedNumber("What is this Pokemon's base Special? ", 1, 255)
+        
+        print("\n\nLet's give this Pokemon some types.")
+        wait(1000)
+        answer = askForLimitedNumber("Will this Pokemon have 1 type or 2? ", 1, 2)
+        if answer == "1":
+            Type1 = askList("Enter this Pokemon's type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+            Type2 = "None"
+        else:
+            Type1 = askList("Enter this Pokemon's first type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water'])
+            Type2 = askList("Enter this Pokemon's second type: ", ['Bug', 'Dragon', 'Electric', 'Fighting', 'Fire', 'Flying', 'Ghost', 'Grass', 'Ground', 'Ice', 'Normal', 'Poison', 'Psychic', 'Rock', 'Water', 'None'])
+        
+        PokeLevel = askForLimitedNumber("Enter the Pokemon's level: ", 1, 100)
+        
+        PokeName = input("Finally, give the Pokemon a nickname: ")
+        
         
         
     if Type2 == "None":
         RivalPoke1 = Pokemon(name=PokeName, p_type=[Type1], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        if customPoke == "yes":
+            RivalPoke1.Base_HP = temp1
+            RivalPoke1.Base_ATK = temp2
+            RivalPoke1.Base_DEF = temp3
+            RivalPoke1.Base_SPD = temp4
+            RivalPoke1.Base_Sp = temp5
         for i in range(RivalPoke1.level):
             RivalPoke1.Level_up()
     else:
         RivalPoke1 = Pokemon(name=PokeName, p_type=[Type1, Type2], pokemon=PokeSpecies, level=PokeLevel, hp=True)
+        if customPoke == "yes":
+            RivalPoke1.Base_HP = temp1
+            RivalPoke1.Base_ATK = temp2
+            RivalPoke1.Base_DEF = temp3
+            RivalPoke1.Base_SPD = temp4
+            RivalPoke1.Base_Sp = temp5
         for i in range(RivalPoke1.level):
             RivalPoke1.Level_up()
     
-    if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no"]) == "yes":
+    
+    if askList("{}'s EVs are currently all 0. You can customize this.\nWould you like to set {}'s EVs? (I reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no", "Yes", "No"]) in ["yes", "Yes"]:
         EV1 = askForLimitedNumber("Enter {}'s HP EV: ".format(PokeName), 0, 252)
         EV2 = askForLimitedNumber("Enter {}'s ATK EV: ".format(PokeName), 0, 252)
         EV3 = askForLimitedNumber("Enter {}'s DEF EV: ".format(PokeName), 0, 252)
@@ -783,7 +871,7 @@ def makeNewPokemon():
         RivalPoke1.SPD_EV = EV4
         RivalPoke1.Sp_EV = EV1
     
-    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no"]) == "yes":
+    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no", "Yes", "No"]) in ["Yes", "No", "yes", "no"]:
         IV1 = askForLimitedNumber("Enter {}'s HP IV: ".format(PokeName), 0, 15)
         IV2 = askForLimitedNumber("Enter {}'s ATK IV: ".format(PokeName), 0, 15)
         IV3 = askForLimitedNumber("Enter {}'s DEF IV: ".format(PokeName), 0, 15)
@@ -800,16 +888,16 @@ def makeNewPokemon():
     
     
     RivalPoke1.UpdateStats()
-    print("\n{} has {} max health.".format(RivalPoke1.name, RivalPoke1.Max_HP))
-    if askList("Would you like to set {}'s HP to something othen than maximum? ".format(RivalPoke1.name),["yes", "no"]) == "yes":
-        RivalPoke1.hp = askForLimitedNumber("Enter new HP: ", 1, RivalPoke1.Max_HP)
-    else:
-        RivalPoke1.hp = RivalPoke1.Max_HP
+    #print("\n{} has {} max health.".format(RivalPoke1.name, RivalPoke1.Max_HP))
+    #if askList("Would you like to set {}'s HP to something othen than maximum? ".format(RivalPoke1.name),["yes", "no"]) == "yes":
+    #    RivalPoke1.hp = askForLimitedNumber("Enter new HP: ", 1, RivalPoke1.Max_HP)
+    #else:
+    #    RivalPoke1.hp = RivalPoke1.Max_HP
     print("")
     print("Almost done!")
     wait(1000)
     print("Now it's time to give {} some moves".format(RivalPoke1.name))
-    for i in range(askForLimitedNumber("{} can learn up to 4 moves. How many moves do you want to teach {}? ".format(RivalPoke1.name, RivalPoke1.name),1,4)):
+    for i in range(askForLimitedNumber("{} can learn up to 4 moves. How many moves do you want to teach {}?\nYou can refer to Pokemon_Info/Pokemon Moves.csv for a list of moves by number.".format(RivalPoke1.name, RivalPoke1.name),1,4)):
         number = askForLimitedNumber("Enter a move number: ",1,165)
         if (RivalPoke1.GetMove((allMoves[number][1])))[3] == 'Status':
             while True:
@@ -840,6 +928,8 @@ def battle():
     global rival_move_used
     print("Starting battle....")
     wait(2000)
+    PlayerPoke1.hp = PlayerPoke1.Max_HP
+    RivalPoke1.hp = PlayerPoke1.Max_HP
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
     print('''
   ___          _     _     _            ___   _                  _     _ 
@@ -918,6 +1008,11 @@ def battle():
             rival_usable_moves.append(RivalPoke1.moves[3])
 
         rival_move_used = rival_usable_moves[random.randint(0,len(rival_usable_moves))]
+        if rival_move_used == "None":
+            while True:
+                rival_move_used = rival_usable_moves[random.randint(0,len(rival_usable_moves))]
+                if not(rival_move_used == "None"):
+                    break
         
     #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1001,6 +1096,10 @@ def mainMenu():
                                                           
     print("Welcome to the Pokémon Battle Simulator!")
     print("Please select an option below:\n")
+    if PlayerPoke1 == None:
+        print(Style.DIM + "There are no Pokemon loaded. You cannot battle!" + Style.RESET_ALL)
+    else:
+        print(Style.DIM + "There are Pokemon loaded. You can battle now!" + Style.RESET_ALL)
     print(Fore.BLUE + "1" + Style.RESET_ALL + ". Load from save file")
     print(Fore.BLUE + "2" + Style.RESET_ALL + ". Create new Pokémon to battle")
     print(Fore.BLUE + "3" + Style.RESET_ALL + ". Battle with existing Pokémon")
