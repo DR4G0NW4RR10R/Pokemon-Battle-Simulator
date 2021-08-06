@@ -149,4 +149,5 @@
 149,Dragonite,3,91,134,95,80,100,Slow,0,3,0,0,0,0
 150,Mewtwo,1,106,110,90,130,154,Slow,0,0,0,3,0,0
 151,Mew,1,100,100,100,100,100,Medium Slow,3,0,0,0,0,0
+152,CustomPokemon,1,0,0,0,0,0,Medium Fast,0,0,0,0,0,0
 Number,Name,Stage,HP,ATK,DEF,SPD,Sp,Level rate,HP EV,ATK EV,DEF EV,SpATK EV,SpDEF EV,SPD EV
