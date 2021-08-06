@@ -871,7 +871,7 @@ def makeNewPokemon():
         RivalPoke1.SPD_EV = EV4
         RivalPoke1.Sp_EV = EV1
     
-    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no", "Yes", "No"]) in ["Yes", "No", "yes", "no"]:
+    if askList("\n{}'s IVs are currently all randomized. You can customize this.\nWould you like to set {}'s IVs? (I *really* reccomend only doing this if you know what you're doing!) ".format(RivalPoke1.name, RivalPoke1.name), ["yes", "no", "Yes", "No"]) in ["Yes", "yes"]:
         IV1 = askForLimitedNumber("Enter {}'s HP IV: ".format(PokeName), 0, 15)
         IV2 = askForLimitedNumber("Enter {}'s ATK IV: ".format(PokeName), 0, 15)
         IV3 = askForLimitedNumber("Enter {}'s DEF IV: ".format(PokeName), 0, 15)
@@ -1148,7 +1148,7 @@ Feedback link:
 https://forms.gle/wdV6MFvbZbu76ow19
 
 Special thanks to my beta testers for being amazing and trying this game:
-- No one yet :*(
+- Apollowo
         ''')
         wait(5000)
         input(Style.DIM + "Type anything to continue: ")
