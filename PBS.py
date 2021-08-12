@@ -5,11 +5,28 @@ from datetime import datetime
 import csv
 from shutil import copyfile
 import sys
-from colorama import init, Fore, Back, Style
 
-
-
-init()
+try:
+    from colorama import init, Fore, Back, Style
+    init()
+except:
+    class colorama_replacement:
+        def __init__(self):
+            self.BLACK = ""
+            self.RED = ""
+            self.GREEN = ""
+            self.YELLOW = ""
+            self.BLUE = ""
+            self.MAGENTA = ""
+            self.CYAN = ""
+            self.WHITE = ""
+            self.BRIGHT = ""
+            self.NORMAL = ""
+            self.DIM = ""
+            self.RESET_ALL = ""
+    Fore = colorama_replacement()
+    Back = colorama_replacement()
+    Style = colorama_replacement()
 
 
 log_output = open("log.txt", "a")
