@@ -17,7 +17,7 @@ Feedback link:
 https://forms.gle/wdV6MFvbZbu76ow19
 
 Special thanks to my beta testers for being amazing and trying this game:
-- No one yet :*(
+- Apollo
 
 
 
